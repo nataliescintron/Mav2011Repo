@@ -1,7 +1,5 @@
 streamlit
 pandas
-matplotlib
 numpy
-StandardScaler
-KNeighborsClassifier
-DecisionTreeClassifier
+matplotlib
+scikit-learn
