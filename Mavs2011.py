@@ -13,6 +13,9 @@ playoffs = pd.read_csv('https://raw.githubusercontent.com/zachjf9/Mav2011Repo/re
 
 # data preprocessing (used AI to clean the data)
 
+regularSeason.columns = regularSeason.columns.str.strip()
+playoffs.columns = playoffs.columns.str.strip()
+
 def preprocess(df):
     df = df.copy()
 
@@ -36,7 +39,8 @@ def preprocess(df):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    if "Date" in df.columns:
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     df["HomeAway"] = df["HomeAway"].astype(str).str.strip()
 
     df["win"] = df["Result"].astype(str).str.contains("W").astype(int)
