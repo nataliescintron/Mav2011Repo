@@ -77,30 +77,31 @@ st.title("2011 Dallas Mavericks Season Analysis")
 
 # the most important factors that contributed to the mavs wins during the season
 
-feature_cols = ["FG_pct","3P_pct","FT_pct","TRB","AST","STL","BLK","TOV","OppFG_pct","OppTOV","Rebound_Diff","Turnover_Diff"]
+feature_cols = [
+    "FG_pct","3P_pct","FT_pct","TRB","AST",
+    "STL","BLK","TOV","OppFG_pct","OppTOV",
+    "Rebound_Diff","Turnover_Diff"
+]
+
+valid_features = [col for col in feature_cols if col in reg_clean.columns]
 
 importantFactors_data = reg_clean.dropna(
-    subset=feature_cols + ["win"]
+    subset=valid_features + ["win"]
 )
 
-X1 = importantFactors_data[feature_cols]
+X1 = importantFactors_data[valid_features]
 y1 = importantFactors_data["win"]
 
-X_train,X_test,y_train,y_test = train_test_split(X1, y1, test_size=.25, random_state=42)
+X_train,X_test,y_train,y_test = train_test_split(
+    X1, y1, test_size=.25, random_state=42
+)
 
 tree1 = DecisionTreeClassifier(max_depth=4, random_state=42)
-
 tree1.fit(X_train,y_train)
 
 importance = pd.DataFrame({
-    "Feature": feature_cols,
-    "Importance": tree1.feature_importances_}).sort_values(
-    by="Importance",
-    ascending=False
-)
-
-st.subheader(
-    "Model 1: Statistics Most Related to Wins"
-)
+    "Feature": valid_features,
+    "Importance": tree1.feature_importances_
+}).sort_values(by="Importance", ascending=False)
 
 st.dataframe(importance)
