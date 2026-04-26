@@ -27,7 +27,6 @@ playoffs = playoffs.loc[:, ~playoffs.columns.duplicated()]
 # data preprocessing (used AI to clean the data)
 def preprocess(df):
     df = df.copy()
-
     df.columns = df.columns.str.strip()
 
     if "Rslt" in df.columns:
@@ -37,8 +36,8 @@ def preprocess(df):
     else:
         df["win"] = np.nan
 
-    for col in df.columns:
-        df[col] = pd.to_numeric(df[col], errors="ignore")
+    numeric_cols = df.select_dtypes(include=["number"]).columns
+    df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors="coerce")
 
     return df
 
