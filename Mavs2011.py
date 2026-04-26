@@ -1,4 +1,5 @@
 import streamlit as st
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
@@ -84,3 +85,11 @@ importance = pd.DataFrame({
 
 st.subheader("Model 1: What Stats Most Impact Wins?")
 st.dataframe(importance)
+
+# model 1 visualization
+
+plt.figure(figsize=(10, 6))
+plt.barh(importance["Feature"], importance["Importance"], color="skyblue")
+plt.xlabel("Importance")
+plt.title("Feature Importance in Predicting Wins")
+plt.show()
