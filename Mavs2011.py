@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -17,12 +19,7 @@ def preprocess(df):
     df = df.copy()
     df.columns = df.columns.str.strip()
 
-    rename_map = {
-        "Home/Away": "HomeAway",
-        "Home Away": "HomeAway",
-        "W/L": "Result",
-        "Outcome": "Result"
-    }
+    rename_map = {"Home/Away": "HomeAway","Home Away": "HomeAway","W/L": "Result","Outcome": "Result"}
 
     df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns}, inplace=True)
 
@@ -70,3 +67,40 @@ def preprocess(df):
     df = df.dropna(subset=[c for c in required if c in df.columns])
 
     return df
+
+reg_clean = preprocess(regularSeason)
+playoffs_clean = preprocess(playoffs)
+
+# visualization and models
+
+st.title("2011 Dallas Mavericks Season Analysis")
+
+# the most important factors that contributed to the mavs wins during the season
+
+feature_cols = ["FG_pct","3P_pct","FT_pct","TRB","AST","STL","BLK","TOV","OppFG_pct","OppTOV","Rebound_Diff","Turnover_Diff"]
+
+importantFactors_data = reg_clean.dropna(
+    subset=feature_cols + ["win"]
+)
+
+X1 = importantFactors_data[feature_cols]
+y1 = importantFactors_data["win"]
+
+X_train,X_test,y_train,y_test = train_test_split(X1, y1, test_size=.25, random_state=42)
+
+tree1 = DecisionTreeClassifier(max_depth=4, random_state=42)
+
+tree1.fit(X_train,y_train)
+
+importance = pd.DataFrame({
+    "Feature": feature_cols,
+    "Importance": tree1.feature_importances_}).sort_values(
+    by="Importance",
+    ascending=False
+)
+
+st.subheader(
+    "Model 1: Statistics Most Related to Wins"
+)
+
+st.dataframe(importance)
