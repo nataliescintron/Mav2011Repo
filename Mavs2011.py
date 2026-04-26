@@ -88,8 +88,10 @@ st.dataframe(importance)
 
 # model 1 visualization
 
-plt.figure(figsize=(10, 6))
-plt.barh(importance["Feature"], importance["Importance"], color="skyblue")
-plt.xlabel("Importance")
-plt.title("Feature Importance in Predicting Wins")
-plt.show()
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.barh(importance["Feature"], importance["Importance"], color="skyblue")
+ax.set_xlabel("Importance")
+ax.set_title("Feature Importance in Predicting Wins")
+ax.invert_yaxis()
+
+st.pyplot(fig)
