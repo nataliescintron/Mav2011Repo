@@ -50,21 +50,18 @@ st.title("2011 Dallas Mavericks Season Analysis")
 # model 1
 
 model1_data = reg_clean.copy()
-model1_data = model1_data.dropna(subset=["win"])
 
-numeric_df = model1_data.select_dtypes(include=[np.number])
+model1_data["win"] = model1_data["Rslt"].astype(str).str.contains("W").astype(int)
 
-if "win" not in numeric_df.columns:
-    numeric_df["win"] = model1_data["win"]
+feature_cols = [
+    "FG%", "3P%", "FT%",
+    "TRB", "AST", "STL", "BLK", "TOV"
+]
 
-feature_cols = [c for c in numeric_df.columns if c != "win"]
+feature_cols = [c for c in feature_cols if c in model1_data.columns]
+model1_data = model1_data.dropna(subset=feature_cols + ["win"])
 
-model1_data = numeric_df.dropna()
-
-st.write("Dataset shape:", model1_data.shape)
-st.write("Features used:", feature_cols)
-
-if len(model1_data) < 10 or len(feature_cols) == 0:
+if len(model1_data) < 10:
     st.error("Not enough usable data after cleaning.")
     st.stop()
 
@@ -88,7 +85,7 @@ st.dataframe(importance)
 
 # model 1 visualization
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(15, 10))
 ax.barh(importance["Feature"], importance["Importance"], color="skyblue")
 ax.set_xlabel("Importance")
 ax.set_title("Feature Importance in Predicting Wins")
